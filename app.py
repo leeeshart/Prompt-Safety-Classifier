@@ -72,8 +72,8 @@ with st.sidebar:
     -  Unsafe
     """)
     st.divider()
-    st.write("**Built by:** [Your Name]")
+    st.write("**Built by:** Leesha Mogha")
     st.write("**Research:** Prompt Injection in LLMs")
     st.write("**Dataset:** TrustAIRLab — 6,387 real prompts")
     st.divider()
-    st.caption("BCA 2nd Year Research Project")
+
