@@ -59,10 +59,15 @@ Probability Score
 ---
 
 ## Repository Structure
+
 ├── Prompt_Injection.ipynb   # Full research notebook
+
 ├── app.py                   # Streamlit web app
+
 ├── model.pkl                # Trained classifier
+
 ├── vectorizer.pkl           # TF-IDF vectorizer
+
 └── requirements.txt         # Dependencies
 
 ---
