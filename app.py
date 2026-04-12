@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # Header
-st.title("🛡️ Prompt Safety Classifier")
+st.title("Prompt Safety Classifier")
 st.markdown("*Research project on detecting prompt injection in LLMs*")
 st.divider()
 
