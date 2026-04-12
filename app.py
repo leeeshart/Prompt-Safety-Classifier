@@ -37,13 +37,13 @@ if st.button("Classify", type="primary"):
         st.divider()
 
         if prob < 0.35:
-            st.success("🟢 SAFE")
+            st.success("SAFE")
             st.write("This prompt appears harmless.")
         elif prob > 0.65:
-            st.error("🔴 UNSAFE")
+            st.error("UNSAFE")
             st.write("This prompt shows signs of harmful intent.")
         else:
-            st.warning("🟡 SUSPICIOUS")
+            st.warning("SUSPICIOUS")
             st.write("This prompt is ambiguous — requires human review.")
 
         # Probability bar
@@ -67,9 +67,9 @@ with st.sidebar:
     st.header("About")
     st.write("""
     This tool classifies prompts into three categories:
-    - 🟢 Safe
-    - 🟡 Suspicious  
-    - 🔴 Unsafe
+    -  Safe
+    -  Suspicious  
+    -  Unsafe
     """)
     st.divider()
     st.write("**Built by:** [Your Name]")
