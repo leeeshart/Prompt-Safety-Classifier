@@ -7,9 +7,9 @@ from scipy.sparse import hstack, csr_matrix
 
 @st.cache_resource
 def load_models():
-    with open("model_v2.pkl", "rb") as f:
+    with open("model.pkl", "rb") as f:
         model = pickle.load(f)
-    with open("vectorizer_v2.pkl", "rb") as f:
+    with open("vectorizer.pkl", "rb") as f:
         vectorizer = pickle.load(f)
     embedder = SentenceTransformer("all-MiniLM-L6-v2")
     return model, vectorizer, embedder
