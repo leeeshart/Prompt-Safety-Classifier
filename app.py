@@ -1,79 +1,77 @@
 import streamlit as st
 import pickle
+import numpy as np
+import re
+from sentence_transformers import SentenceTransformer
+from scipy.sparse import hstack, csr_matrix
 
-# Load model
-with open('model.pkl', 'rb') as f:
-    model = pickle.load(f)
+@st.cache_resource
+def load_models():
+    with open("model_v2.pkl", "rb") as f:
+        model = pickle.load(f)
+    with open("vectorizer_v2.pkl", "rb") as f:
+        vectorizer = pickle.load(f)
+    embedder = SentenceTransformer("all-MiniLM-L6-v2")
+    return model, vectorizer, embedder
 
-with open('vectorizer.pkl', 'rb') as f:
-    vectorizer = pickle.load(f)
+PERSONA_RE  = re.compile(r"you are now|act as|pretend (you are|to be)|roleplay as|from now on you|stay in character", re.I)
+FICTION_RE  = re.compile(r"write (a |an )?(story|scene|novel|script)|in (a |the )?(story|novel|fiction|game|simulation)|as a (character|fictional)|imagine (a |that |you )", re.I)
+INDIRECT_RE = re.compile(r"how would (a |the )?character|without (saying|mentioning)|from the perspective of|as if you (were|are)", re.I)
+OVERRIDE_RE = re.compile(r"ignore (all )?(previous|prior) instructions|your true (self|nature)|jailbreak|DAN|do anything now|bypass (your )?(safety|filters)", re.I)
 
-# Page config
-st.set_page_config(
-    page_title="Prompt Safety Classifier",
-    page_icon="🛡️"
-)
+def extract_intent_features(text):
+    hp = int(bool(PERSONA_RE.search(text)))
+    hf = int(bool(FICTION_RE.search(text)))
+    hi = int(bool(INDIRECT_RE.search(text)))
+    ho = int(bool(OVERRIDE_RE.search(text)))
+    return [[hp, hf, hi, ho, hp + hf + hi + ho]]
 
-# Header
-st.title("Prompt Safety Classifier")
-st.markdown("*Research project on detecting prompt injection in LLMs*")
-st.divider()
+def classify(prompt, model, vectorizer, embedder):
+    tfidf_f  = vectorizer.transform([prompt])
+    intent_f = csr_matrix(extract_intent_features(prompt))
+    embed_f  = csr_matrix(embedder.encode([prompt]))
+    features = hstack([tfidf_f, intent_f, embed_f])
+    prob     = model.predict_proba(features)[0]
+    unsafe_i = list(model.classes_).index("unsafe")
+    score    = prob[unsafe_i]
+    if score < 0.35:   cat = "Safe"
+    elif score > 0.65: cat = "Unsafe"
+    else:              cat = "Suspicious"
+    return cat, score
 
-# Input
-prompt = st.text_area(
-    "Enter a prompt to classify:",
-    height=150,
-    placeholder="Type any prompt here..."
-)
+st.set_page_config(page_title="Prompt Safety Classifier v2", page_icon="🛡️")
+st.title("Prompt Safety Classifier v2")
+st.markdown("*Intent-aware detection — catches roleplay and indirect injection attacks*")
 
-# Classify button
+with st.spinner("Loading models..."):
+    model, vectorizer, embedder = load_models()
+
+prompt = st.text_area("Enter a prompt:", height=150)
+
 if st.button("Classify", type="primary"):
     if not prompt.strip():
-        st.warning("Please enter a prompt first.")
+        st.warning("Please enter a prompt.")
     else:
-        vectorized = vectorizer.transform([prompt])
-        prob = model.predict_proba(vectorized)[0][1]
-
-        st.divider()
-
-        if prob < 0.35:
-            st.success("SAFE")
-            st.write("This prompt appears harmless.")
-        elif prob > 0.65:
-            st.error("UNSAFE")
-            st.write("This prompt shows signs of harmful intent.")
+        cat, score = classify(prompt, model, vectorizer, embedder)
+        if cat == "Safe":
+            st.success(f" SAFE (score: {score:.2f})")
+        elif cat == "Unsafe":
+            st.error(f" UNSAFE (score: {score:.2f})")
         else:
-            st.warning("SUSPICIOUS")
-            st.write("This prompt is ambiguous — requires human review.")
+            st.warning(f" SUSPICIOUS (score: {score:.2f}) — may use indirect framing")
+        st.progress(float(score))
 
-        # Probability bar
-        st.divider()
-        st.write("**Unsafe Probability Score:**")
-        st.progress(float(prob))
-        st.caption(f"{prob:.2f} / 1.00")
-
-        # Explanation
-        with st.expander("What does this mean?"):
-            st.write("""
-            - **Safe (< 0.35):** Prompt is likely harmless
-            - **Suspicious (0.35–0.65):** Ambiguous — could be 
-            educational or harmful depending on context
-            - **Unsafe (> 0.65):** Prompt likely attempts to 
-            manipulate or bypass AI safety measures
-            """)
-
-# Sidebar
 with st.sidebar:
     st.header("About")
     st.write("""
-    This tool classifies prompts into three categories:
+    This tool classifies prompts into:
     -  Safe
-    -  Suspicious  
+    -  Suspicious
     -  Unsafe
     """)
     st.divider()
-    st.write("**Built by:** Leesha Mogha")
-    st.write("**Research:** Prompt Injection in LLMs")
-    st.write("**Dataset:** TrustAIRLab — 6,387 real prompts")
+    st.write("**v2 improvements:**")
+    st.write("Detects roleplay, persona switching, and fictional framing attacks")
     st.divider()
-
+    st.write("**Built by:** Leesha Mogha")
+    st.write("**Dataset:** TrustAIRLab — 6,387 prompts")
