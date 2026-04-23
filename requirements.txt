@@ -1,3 +1,5 @@
 streamlit
 scikit-learn
 numpy
+scipy
+sentence-transformers
