@@ -210,7 +210,10 @@ individual lift; intent features add further improvement on top.
 |---|---|---|---|
 | v1 — Baseline (no balancing) | 93% | 52% | No |
 | v1 — Balanced TF-IDF | 93% | 85% | Partially |
-| v2 — Full combined model | 93.7% | 87.1% | Yes |
+| v2 — TF-IDF + Intent | 92.8% | 83.9% | Yes (pattern-level) |
+| v2 — TF-IDF + Embeddings | 93.3% | 85.8% | Yes (semantic-level) |
+| **v2 — Full combined model** | **93.7%** | **87.1%** | **Yes (both layers)** |
+
 
 ---
 
