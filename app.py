@@ -43,19 +43,6 @@ def classify(prompt, model, vectorizer, embedder):
 
     return cat, score
 
-import google.generativeai as genai
-
-genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-
-def get_gemini_explanation(prompt, category):
-    if category == "Safe":
-        return None
-    model = genai.GenerativeModel("gemini-2.0-flash")
-    response = model.generate_content(
-        f"In one sentence, explain why this prompt might be considered {category.lower()} "
-        f"for an AI system: '{prompt[:200]}'"
-    )
-    return response.text
 
 st.set_page_config(page_title="Prompt Safety Classifier", page_icon="🛡️")
 st.title("Prompt Safety Classifier")
