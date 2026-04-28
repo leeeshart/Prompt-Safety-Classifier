@@ -39,8 +39,8 @@ def classify(prompt, model, vectorizer, embedder):
     else:              cat = "Suspicious"
     return cat, score
 
-st.set_page_config(page_title="Prompt Safety Classifier v2", page_icon="🛡️")
-st.title("Prompt Safety Classifier v2")
+st.set_page_config(page_title="Prompt Safety Classifier", page_icon="🛡️")
+st.title("Prompt Safety Classifier")
 st.markdown("*Intent-aware detection — catches roleplay and indirect injection attacks*")
 
 with st.spinner("Loading models..."):
