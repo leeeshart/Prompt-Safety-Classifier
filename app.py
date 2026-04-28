@@ -31,20 +31,16 @@ def classify(prompt, model, vectorizer, embedder):
     intent_f = csr_matrix(extract_intent_features(prompt))
     embed_f  = csr_matrix(embedder.encode([prompt]))
     features = hstack([tfidf_f, intent_f, embed_f])
-
-    # Debug: show feature shape
-    st.caption(f"Debug — feature shape: {features.shape}, model expects: {model.n_features_in_}")
-
     prob     = model.predict_proba(features)[0]
     unsafe_i = list(model.classes_).index("unsafe")
     score    = prob[unsafe_i]
 
-    # Debug: show raw score
-    st.caption(f"Debug — raw unsafe score: {score:.4f} | classes: {model.classes_}")
+    # Thresholds calibrated to this model's actual score range
+    # Safe prompts score ~0.01-0.08, unsafe ~0.15-0.50
+    if score < 0.12:    cat = "Safe"
+    elif score > 0.20:  cat = "Unsafe"
+    else:               cat = "Suspicious"
 
-    if score < 0.35:   cat = "Safe"
-    elif score > 0.65: cat = "Unsafe"
-    else:              cat = "Suspicious"
     return cat, score
 
 st.set_page_config(page_title="Prompt Safety Classifier", page_icon="🛡️")
@@ -54,9 +50,8 @@ st.markdown("*Intent-aware detection — catches roleplay and indirect injection
 try:
     with st.spinner("Loading models..."):
         model, vectorizer, embedder = load_models()
-    st.success(" Models loaded successfully")
 except Exception as e:
-    st.error(f"❌ Model loading failed: {e}")
+    st.error(f" Model loading failed: {e}")
     st.stop()
 
 prompt = st.text_area("Enter a prompt:", height=150)
