@@ -54,7 +54,7 @@ st.markdown("*Intent-aware detection — catches roleplay and indirect injection
 try:
     with st.spinner("Loading models..."):
         model, vectorizer, embedder = load_models()
-    st.success("✅ Models loaded successfully")
+    st.success(" Models loaded successfully")
 except Exception as e:
     st.error(f"❌ Model loading failed: {e}")
     st.stop()
@@ -68,22 +68,22 @@ if st.button("Classify", type="primary"):
         try:
             cat, score = classify(prompt, model, vectorizer, embedder)
             if cat == "Safe":
-                st.success(f"✅ SAFE (score: {score:.2f})")
+                st.success(f" SAFE (score: {score:.2f})")
             elif cat == "Unsafe":
-                st.error(f"🚫 UNSAFE (score: {score:.2f})")
+                st.error(f" UNSAFE (score: {score:.2f})")
             else:
-                st.warning(f"⚠️ SUSPICIOUS (score: {score:.2f}) — may use indirect framing")
+                st.warning(f" SUSPICIOUS (score: {score:.2f}) — may use indirect framing")
             st.progress(float(score))
         except Exception as e:
-            st.error(f"❌ Classification failed: {e}")
+            st.error(f" Classification failed: {e}")
 
 with st.sidebar:
     st.header("About")
     st.write("""
     This tool classifies prompts into:
-    - ✅ Safe
-    - ⚠️ Suspicious
-    - 🚫 Unsafe
+    -  Safe
+    -  Suspicious
+    -  Unsafe
     """)
     st.divider()
     st.write("**v2 improvements:**")
