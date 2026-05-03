@@ -6,8 +6,6 @@
 ![Streamlit](https://img.shields.io/badge/Streamlit-deployed-red)
 ![Dataset](https://img.shields.io/badge/Dataset-TrustAIRLab-green)
 
-## Live Demo
-🔗 [prompt-safety-classifier.streamlit.app](https://prompt-safety-classifier.streamlit.app)
 
 ---
 
