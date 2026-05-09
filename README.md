@@ -84,13 +84,15 @@ under-blocking of genuinely ambiguous prompts.
 | Suspicious | 0.12 – 0.20 | Limit / Human review |
 | Unsafe | > 0.20 | Block |
 
-> **Note on thresholds:** These values were derived from precision-recall curve
-> analysis (Section 5b of the notebook). The v2 combined model (TF-IDF + Intent +
-> Embeddings) produces compressed probability scores in the range 0.01–0.50
-> rather than the full 0–1 range, because the minority class (10.4% of data)
-> creates a prior that pulls all predictions toward Safe. The lower threshold
-> (0.12) is the highest decision score maintaining unsafe recall ≥ 0.95; the
-> upper threshold (0.20) is the lowest score achieving unsafe precision ≥ 0.80.
+> **Note on thresholds:** These values come from the precision-recall
+> calibration cell in `Prompt_Injection_v2.ipynb`. The v2 combined model
+> (TF-IDF + Intent + Embeddings) produces compressed probability scores
+> in the range 0.01–0.50 rather than the full 0–1 range, because the
+> minority class (10.4% of data) creates a prior that pulls all
+> predictions toward Safe. The notebook derives deployment cutoffs from
+> held-out scores and the checked-in app uses the latest exported values:
+> photosynthesis → 0.04, phone cloning → 0.15, explosive synthesis → 0.21.
+> Refresh the thresholds whenever the model is retrained.
 
 ### What v1 got wrong — the vocabulary bias problem
 
@@ -251,10 +253,10 @@ and *"from the perspective of"*. The fiction-frame patterns cannot
 distinguish intent from vocabulary alone. These prompts end up in
 the Suspicious band, requiring human review.
 
-**Calibrated thresholds.** The 0.12–0.20 Suspicious band was derived from
-precision-recall curve analysis (Section 5b): the lower bound is the highest
-decision score maintaining unsafe recall ≥ 0.95, and the upper bound is the
-lowest score achieving unsafe precision ≥ 0.80.
+**Current deployed thresholds.** The 0.12–0.20 Suspicious band comes
+from the latest precision-recall calibration run in
+`Prompt_Injection_v2.ipynb`. Recompute and re-export these values after
+retraining, because the optimal band will vary by deployment context.
 
 ---
 

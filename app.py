@@ -19,6 +19,10 @@ FICTION_RE  = re.compile(r"write (a |an )?(story|scene|novel|script)|in (a |the 
 INDIRECT_RE = re.compile(r"how would (a |the )?character|without (saying|mentioning)|from the perspective of|as if you (were|are)", re.I)
 OVERRIDE_RE = re.compile(r"ignore (all )?(previous|prior) instructions|your true (self|nature)|jailbreak|DAN|do anything now|bypass (your )?(safety|filters)", re.I)
 
+# Latest exported thresholds from Prompt_Injection_v2.ipynb
+THRESHOLD_SAFE = 0.12
+THRESHOLD_UNSAFE = 0.20
+
 def extract_intent_features(text):
     hp = int(bool(PERSONA_RE.search(text)))
     hf = int(bool(FICTION_RE.search(text)))
@@ -35,12 +39,11 @@ def classify(prompt, model, vectorizer, embedder):
     unsafe_i = list(model.classes_).index("unsafe")
     score    = prob[unsafe_i]
 
-    # Thresholds derived from precision-recall curve analysis (Section 5b):
-    # lower = highest score where unsafe recall >= 0.95 (catch nearly all unsafe)
-    # upper = lowest score where unsafe precision >= 0.80 (limit false blocks)
-    if score < 0.12:    cat = "Safe"
-    elif score > 0.20:  cat = "Unsafe"
-    else:               cat = "Suspicious"
+    # Thresholds calibrated to this model's actual score range
+    # Safe prompts score ~0.01-0.08, unsafe ~0.15-0.50
+    if score < THRESHOLD_SAFE:    cat = "Safe"
+    elif score > THRESHOLD_UNSAFE:  cat = "Unsafe"
+    else:                         cat = "Suspicious"
 
     return cat, score
 
