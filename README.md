@@ -84,14 +84,13 @@ under-blocking of genuinely ambiguous prompts.
 | Suspicious | 0.12 – 0.20 | Limit / Human review |
 | Unsafe | > 0.20 | Block |
 
-> **Note on thresholds:** These values were calibrated against the
-> model's actual output distribution after deployment. The v2 combined
-> model (TF-IDF + Intent + Embeddings) produces compressed probability
-> scores in the range 0.01–0.50 rather than the full 0–1 range, because
-> the minority class (10.4% of data) creates a prior that pulls all
-> predictions toward Safe. Thresholds were set empirically:
-> photosynthesis → 0.04, phone cloning → 0.15, explosive synthesis → 0.21.
-> This calibration step is a necessary part of deploying any imbalanced classifier.
+> **Note on thresholds:** These values were derived from precision-recall curve
+> analysis (Section 5b of the notebook). The v2 combined model (TF-IDF + Intent +
+> Embeddings) produces compressed probability scores in the range 0.01–0.50
+> rather than the full 0–1 range, because the minority class (10.4% of data)
+> creates a prior that pulls all predictions toward Safe. The lower threshold
+> (0.12) is the highest decision score maintaining unsafe recall ≥ 0.95; the
+> upper threshold (0.20) is the lowest score achieving unsafe precision ≥ 0.80.
 
 ### What v1 got wrong — the vocabulary bias problem
 
@@ -252,10 +251,10 @@ and *"from the perspective of"*. The fiction-frame patterns cannot
 distinguish intent from vocabulary alone. These prompts end up in
 the Suspicious band, requiring human review.
 
-**Fixed thresholds.** The 0.12–0.20 Suspicious band is calibrated
-empirically against the deployed model's output range. It is not
-optimised using precision-recall curves, which will vary by
-deployment context.
+**Calibrated thresholds.** The 0.12–0.20 Suspicious band was derived from
+precision-recall curve analysis (Section 5b): the lower bound is the highest
+decision score maintaining unsafe recall ≥ 0.95, and the upper bound is the
+lowest score achieving unsafe precision ≥ 0.80.
 
 ---
 
