@@ -35,8 +35,9 @@ def classify(prompt, model, vectorizer, embedder):
     unsafe_i = list(model.classes_).index("unsafe")
     score    = prob[unsafe_i]
 
-    # Thresholds calibrated to this model's actual score range
-    # Safe prompts score ~0.01-0.08, unsafe ~0.15-0.50
+    # Thresholds derived from precision-recall curve analysis (Section 5b):
+    # lower = highest score where unsafe recall >= 0.95 (catch nearly all unsafe)
+    # upper = lowest score where unsafe precision >= 0.80 (limit false blocks)
     if score < 0.12:    cat = "Safe"
     elif score > 0.20:  cat = "Unsafe"
     else:               cat = "Suspicious"
