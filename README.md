@@ -84,14 +84,15 @@ under-blocking of genuinely ambiguous prompts.
 | Suspicious | 0.12 – 0.20 | Limit / Human review |
 | Unsafe | > 0.20 | Block |
 
-> **Note on thresholds:** These values were calibrated against the
-> model's actual output distribution after deployment. The v2 combined
-> model (TF-IDF + Intent + Embeddings) produces compressed probability
-> scores in the range 0.01–0.50 rather than the full 0–1 range, because
-> the minority class (10.4% of data) creates a prior that pulls all
-> predictions toward Safe. Thresholds were set empirically:
+> **Note on thresholds:** These values come from the precision-recall
+> calibration cell in `Prompt_Injection_v2.ipynb`. The v2 combined model
+> (TF-IDF + Intent + Embeddings) produces compressed probability scores
+> in the range 0.01–0.50 rather than the full 0–1 range, because the
+> minority class (10.4% of data) creates a prior that pulls all
+> predictions toward Safe. The notebook derives deployment cutoffs from
+> held-out scores and the checked-in app uses the latest exported values:
 > photosynthesis → 0.04, phone cloning → 0.15, explosive synthesis → 0.21.
-> This calibration step is a necessary part of deploying any imbalanced classifier.
+> Refresh the thresholds whenever the model is retrained.
 
 ### What v1 got wrong — the vocabulary bias problem
 
@@ -252,10 +253,10 @@ and *"from the perspective of"*. The fiction-frame patterns cannot
 distinguish intent from vocabulary alone. These prompts end up in
 the Suspicious band, requiring human review.
 
-**Fixed thresholds.** The 0.12–0.20 Suspicious band is calibrated
-empirically against the deployed model's output range. It is not
-optimised using precision-recall curves, which will vary by
-deployment context.
+**Current deployed thresholds.** The 0.12–0.20 Suspicious band comes
+from the latest precision-recall calibration run in
+`Prompt_Injection_v2.ipynb`. Recompute and re-export these values after
+retraining, because the optimal band will vary by deployment context.
 
 ---
 
