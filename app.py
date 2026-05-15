@@ -35,9 +35,12 @@ def classify(prompt, model, vectorizer, embedder):
     intent_f = csr_matrix(extract_intent_features(prompt))
     embed_f  = csr_matrix(embedder.encode([prompt]))
     features = hstack([tfidf_f, intent_f, embed_f])
-    prob     = model.predict_proba(features)[0]
-    unsafe_i = list(model.classes_).index("unsafe")
-    score    = prob[unsafe_i]
+    prob = model.predict_proba(features)[0]
+    classes = list(model.classes_)
+    if "unsafe" not in classes:
+        raise ValueError(f"Model classes missing 'unsafe': {model.classes_}")
+    unsafe_i = classes.index("unsafe")
+    score = prob[unsafe_i]
 
     # Thresholds calibrated to this model's actual score range
     # Safe prompts score ~0.01-0.08, unsafe ~0.15-0.50
