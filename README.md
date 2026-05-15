@@ -9,6 +9,26 @@
 
 ---
 
+## Quickstart
+
+```bash
+pip install -r requirements.txt
+streamlit run app_v2.py
+```
+
+**Canonical app entrypoint:** `app_v2.py`
+
+Rationale:
+- The repository is versioned around v1/v2/v3 experiments, and the deployed best-performing app is v2.
+- Using an explicit versioned entrypoint avoids ambiguity and keeps notebooks, docs, and devcontainer startup aligned.
+- `app.py` remains only as a backward-compatible experimental shim for older commands.
+
+## Notebook-to-App Mapping
+
+- `Prompt_Injection.ipynb` (v1 baseline) → no maintained Streamlit app entrypoint (archive/analysis notebook only).
+- `Prompt_Injection_v2.ipynb` (best model) → `app_v2.py` (canonical runtime app).
+- `Prompt_Injection_v3.ipynb` (transformer negative-result experiment) → no maintained Streamlit app entrypoint (archive/analysis notebook only).
+
 ## The Problem
 
 Large Language Models can be manipulated through carefully crafted prompts —
@@ -386,7 +406,8 @@ just pattern-match against training examples.
 ├── Prompt_Injection.ipynb      # v1 — baseline TF-IDF classifier
 ├── Prompt_Injection_v2.ipynb   # v2 — intent features + semantic embeddings (best model)
 ├── Prompt_Injection_v3.ipynb   # v3 — transformer experiment and negative result
-├── app.py                      # Streamlit web app (v2)
+├── app_v2.py                   # Canonical Streamlit web app (v2)
+├── app.py                      # Experimental compatibility shim (non-canonical)
 ├── model.pkl                   # Trained combined classifier
 ├── vectorizer.pkl              # TF-IDF vectorizer
 ├── requirements.txt            # Dependencies
