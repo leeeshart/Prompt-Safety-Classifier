@@ -430,3 +430,25 @@ BCA 2nd Year — IMS Ghaziabad (University Course Campus)
 
 This project accompanies the research paper:  
 *"Balancing Access And Safety: Addressing Prompt Injection Risks In Large Language Models"*
+
+
+---
+
+## Environment setup
+
+Create a clean environment and install runtime dependencies:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+If you need notebooks/retraining tooling as well, install dev extras:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+> Compatibility note: `model.pkl` and `vectorizer.pkl` were serialized with scikit-learn 1.6.1, so runtime uses `scikit-learn>=1.6.1,<1.7` to avoid pickle ABI incompatibilities.
