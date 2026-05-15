@@ -28,6 +28,7 @@ def _file_sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+@st.cache_resource
 def load_threshold_config(path: Path = THRESHOLD_ARTIFACT_PATH) -> dict:
     if not path.exists():
         raise FileNotFoundError(f"Threshold artifact not found at {path}")
