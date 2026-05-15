@@ -1,0 +1,15 @@
+{
+  "model_version": "prompt_injection_v2",
+  "model_sha256": "c0a6e6f1084012e9846c943ac1dacb5889d51614a676adeeb9042e06b4f5df3a",
+  "dataset_split_id": "Prompt_Injection_v2:test_split",
+  "exported_at_utc": "2026-05-15T15:55:13.386903+00:00",
+  "metric_context": {
+    "selection_method": "PR-curve calibration on held-out test set",
+    "target_tradeoff": "balanced recall for unsafe with precision guardrail for safe/suspicious boundary",
+    "average_precision": null
+  },
+  "thresholds": {
+    "lower_t": 0.12,
+    "upper_t": 0.2
+  }
+}

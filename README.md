@@ -430,3 +430,46 @@ BCA 2nd Year — IMS Ghaziabad (University Course Campus)
 
 This project accompanies the research paper:  
 *"Balancing Access And Safety: Addressing Prompt Injection Risks In Large Language Models"*
+
+## Threshold Artifact Export/Load Contract (Canonical)
+
+To keep notebook calibration and runtime behavior in sync, thresholds are now exported and loaded from one canonical artifact:
+
+- **Artifact path:** `artifacts/thresholds.json`
+- **Produced by:** the export cell in `Prompt_Injection_v2.ipynb` (same cell that saves `model.pkl` and `vectorizer.pkl`)
+- **Consumed by:** `app.py` at startup
+
+### Export flow (notebook)
+
+1. Run PR calibration in `Prompt_Injection_v2.ipynb` to derive `lower_t` and `upper_t`.
+2. Run the export cell. It writes:
+   - `model.pkl`
+   - `vectorizer.pkl`
+   - `artifacts/thresholds.json`
+3. The JSON artifact includes:
+   - `model_version`
+   - `model_sha256` (hash of `model.pkl`)
+   - `dataset_split_id`
+   - `exported_at_utc`
+   - `metric_context`
+   - `thresholds.lower_t` and `thresholds.upper_t`
+
+### Runtime load flow (`app.py`)
+
+At startup, `app.py` loads `artifacts/thresholds.json` and performs strict validation:
+
+- artifact file must exist
+- `thresholds.lower_t` and `thresholds.upper_t` must both exist
+- both thresholds must be numeric
+- both thresholds must be in `[0, 1]`
+- `lower_t <= upper_t`
+
+### Regression guard
+
+`app.py` also enforces a model-threshold consistency check:
+
+- Computes SHA-256 of runtime `model.pkl`
+- Compares it to `model_sha256` in `artifacts/thresholds.json`
+- **Fails fast** if hashes differ
+
+This prevents silently running one model with thresholds exported from a different model version.
