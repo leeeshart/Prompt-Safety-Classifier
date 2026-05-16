@@ -1,4 +1,5 @@
 -r requirements.txt
+# Inherits runtime scikit-learn>=1.6.1,<1.7 to match serialized model/vectorizer pickle ABI.
 
 # Notebook / training / data exploration extras.
 pandas>=2.2,<3
