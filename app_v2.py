@@ -25,7 +25,8 @@ FICTION_RE  = re.compile(r"write (a |an )?(story|scene|novel|script)|in (a |the 
 INDIRECT_RE = re.compile(r"how would (a |the )?character|without (saying|mentioning)|from the perspective of|as if you (were|are)", re.I)
 OVERRIDE_RE = re.compile(r"ignore (all )?(previous|prior) instructions|your true (self|nature)|jailbreak|DAN|do anything now|bypass (your )?(safety|filters)", re.I)
 
-# Latest exported thresholds from Prompt_Injection_v2.ipynb
+# Exported thresholds from the last PR calibration run in Prompt_Injection_v2.ipynb.
+# Rerun Section 10 of Prompt_Injection_v2.ipynb to refresh these values.
 THRESHOLD_SAFE = 0.12
 THRESHOLD_UNSAFE = 0.20
 
