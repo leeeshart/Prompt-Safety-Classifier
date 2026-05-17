@@ -5,3 +5,7 @@ pandas>=2.2,<3
 datasets>=3.0,<4
 jupyter>=1.0,<2
 ipykernel>=6.29,<7
+
+# scikit-learn is pinned to >=1.6.1,<1.7 in requirements.txt to avoid
+# pickle ABI incompatibility with serialized model.pkl and vectorizer.pkl.
+# Do not widen this range without re-serializing both artifacts.
