@@ -48,7 +48,7 @@ def classify(prompt, model, vectorizer, embedder):
     # Thresholds calibrated to this model's actual score range
     # Safe prompts score ~0.01-0.08, unsafe ~0.15-0.50
     if score < THRESHOLD_SAFE:    cat = "Safe"
-    elif score > THRESHOLD_UNSAFE:  cat = "Unsafe"
+    elif score >= THRESHOLD_UNSAFE:  cat = "Unsafe"
     else:                         cat = "Suspicious"
 
     return cat, score
