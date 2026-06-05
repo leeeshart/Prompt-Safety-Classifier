@@ -46,6 +46,21 @@ def classify(prompt, model, vectorizer, embedder):
     unsafe_i = list(model.classes_).index("unsafe")
     score    = prob[unsafe_i]
 
+def explain(prompt, model, vectorizer):
+    import numpy as np
+    tfidf_f = vectorizer.transform([prompt])
+    feature_names = vectorizer.get_feature_names_out()
+    tfidf_scores = tfidf_f.toarray()[0]
+    coef = model.coef_[0]
+    word_impact = tfidf_scores * coef
+    top_indices = np.argsort(word_impact)[-5:]
+    top_words = [
+        (feature_names[i], round(float(word_impact[i]), 3))
+        for i in top_indices
+        if tfidf_scores[i] > 0
+    ]
+    return top_words[::-1]
+
     # Thresholds calibrated to this model's actual score range
     # Safe prompts score ~0.01-0.08, unsafe ~0.15-0.50
     if score < THRESHOLD_SAFE:    cat = "Safe"
@@ -81,6 +96,11 @@ if st.button("Classify", type="primary"):
             else:
                 st.warning(f" SUSPICIOUS (score: {score:.2f}) — may use indirect framing")
             st.progress(float(score))
+             words = explain(prompt, model, vectorizer)
+            if words:
+                st.markdown("**Why:**")
+                for word, impact in words:
+                    st.markdown(f"- `{word}` → {impact}")
         except Exception as e:
             st.error(f" Classification failed: {e}")
 
