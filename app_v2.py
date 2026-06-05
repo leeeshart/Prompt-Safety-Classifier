@@ -46,15 +46,13 @@ def classify(prompt, model, vectorizer, embedder):
     else:                            cat = "Suspicious"
     return cat, score
 
-def explain(prompt, model, vectorizer):
+def explain(prompt, vectorizer):
     tfidf_f = vectorizer.transform([prompt])
     feature_names = vectorizer.get_feature_names_out()
     tfidf_scores = tfidf_f.toarray()[0]
-    coef = model.coef_[0]
-    word_impact = tfidf_scores * coef
-    top_indices = np.argsort(word_impact)[-5:]
+    top_indices = np.argsort(tfidf_scores)[-5:]
     top_words = [
-        (feature_names[i], round(float(word_impact[i]), 3))
+        (feature_names[i], round(float(tfidf_scores[i]), 3))
         for i in top_indices
         if tfidf_scores[i] > 0
     ]
@@ -86,7 +84,7 @@ if st.button("Classify", type="primary"):
             else:
                 st.warning(f"SUSPICIOUS (score: {score:.2f}) — may use indirect framing")
             st.progress(float(score))
-            words = explain(prompt, model, vectorizer)
+            words = explain(prompt, vectorizer)
             if words:
                 st.markdown("**Why:**")
                 for word, impact in words:
