@@ -54,6 +54,21 @@ def classify(prompt, model, vectorizer, embedder):
 
     return cat, score
 
+def explain(prompt, model, vectorizer):
+    import numpy as np
+    tfidf_f = vectorizer.transform([prompt])
+    feature_names = vectorizer.get_feature_names_out()
+    tfidf_scores = tfidf_f.toarray()[0]
+    coef = model.coef_[0]
+    word_impact = tfidf_scores * coef
+    top_indices = np.argsort(word_impact)[-5:]
+    top_words = [
+        (feature_names[i], round(float(word_impact[i]), 3))
+        for i in top_indices
+        if tfidf_scores[i] > 0
+    ]
+    return top_words[::-1]
+
 
 st.set_page_config(page_title="Prompt Safety Classifier", page_icon="🛡️")
 st.title("Prompt Safety Classifier")
