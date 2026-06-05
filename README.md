@@ -411,7 +411,7 @@ just pattern-match against training examples.
 ├── Prompt_Injection_v2.ipynb   # v2 — intent features + semantic embeddings (best model)
 ├── Prompt_Injection_v3.ipynb   # v3 — transformer experiment and negative result
 ├── app_v2.py                   # Canonical Streamlit web app (v2)
-├── app.py                      # Experimental compatibility shim (non-canonical)
+├── app.py                      # v1 baseline app — kept to show project progression
 ├── model.pkl                   # Trained combined classifier
 ├── vectorizer.pkl              # TF-IDF vectorizer
 ├── requirements.txt            # Dependencies
