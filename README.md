@@ -2,9 +2,9 @@
 
 > Intent-aware detection of prompt injection in Large Language Models — catches roleplay, persona-switching, and fictional framing attacks
 
-![Python](https://img.shields.io/badge/Python-3.10-blue)
-![Streamlit](https://img.shields.io/badge/Streamlit-deployed-red)
-![Dataset](https://img.shields.io/badge/Dataset-TrustAIRLab-green)
+![Python](https://img.shields.io/badge/Python-3.12-ffb6c1)
+![Streamlit](https://img.shields.io/badge/Streamlit-deployed-ffb6c1)
+![Dataset](https://img.shields.io/badge/Dataset-TrustAIRLab-ffb6c1)
 
 
 ---
