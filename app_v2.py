@@ -1,7 +1,5 @@
 """
 CANONICAL STREAMLIT ENTRYPOINT (v2)
-
-This is the primary app for local/devcontainer startup and README quickstart commands.
 """
 
 import streamlit as st
@@ -25,8 +23,6 @@ FICTION_RE  = re.compile(r"write (a |an )?(story|scene|novel|script)|in (a |the 
 INDIRECT_RE = re.compile(r"how would (a |the )?character|without (saying|mentioning)|from the perspective of|as if you (were|are)", re.I)
 OVERRIDE_RE = re.compile(r"ignore (all )?(previous|prior) instructions|your true (self|nature)|jailbreak|DAN|do anything now|bypass (your )?(safety|filters)", re.I)
 
-# Exported thresholds from the last PR calibration run in Prompt_Injection_v2.ipynb.
-# Rerun Section 10 of Prompt_Injection_v2.ipynb to refresh these values.
 THRESHOLD_SAFE = 0.12
 THRESHOLD_UNSAFE = 0.20
 
@@ -45,9 +41,12 @@ def classify(prompt, model, vectorizer, embedder):
     prob     = model.predict_proba(features)[0]
     unsafe_i = list(model.classes_).index("unsafe")
     score    = prob[unsafe_i]
+    if score < THRESHOLD_SAFE:       cat = "Safe"
+    elif score >= THRESHOLD_UNSAFE:  cat = "Unsafe"
+    else:                            cat = "Suspicious"
+    return cat, score
 
 def explain(prompt, model, vectorizer):
-    import numpy as np
     tfidf_f = vectorizer.transform([prompt])
     feature_names = vectorizer.get_feature_names_out()
     tfidf_scores = tfidf_f.toarray()[0]
@@ -61,15 +60,6 @@ def explain(prompt, model, vectorizer):
     ]
     return top_words[::-1]
 
-    # Thresholds calibrated to this model's actual score range
-    # Safe prompts score ~0.01-0.08, unsafe ~0.15-0.50
-    if score < THRESHOLD_SAFE:    cat = "Safe"
-    elif score >= THRESHOLD_UNSAFE:  cat = "Unsafe"
-    else:                         cat = "Suspicious"
-
-    return cat, score
-
-
 st.set_page_config(page_title="Prompt Safety Classifier", page_icon="🛡️")
 st.title("Prompt Safety Classifier")
 st.markdown("*Intent-aware detection — catches roleplay and indirect injection attacks*")
@@ -78,7 +68,7 @@ try:
     with st.spinner("Loading models..."):
         model, vectorizer, embedder = load_models()
 except Exception as e:
-    st.error(f" Model loading failed: {e}")
+    st.error(f"Model loading failed: {e}")
     st.stop()
 
 prompt = st.text_area("Enter a prompt:", height=150)
@@ -90,27 +80,27 @@ if st.button("Classify", type="primary"):
         try:
             cat, score = classify(prompt, model, vectorizer, embedder)
             if cat == "Safe":
-                st.success(f" SAFE (score: {score:.2f})")
+                st.success(f"SAFE (score: {score:.2f})")
             elif cat == "Unsafe":
-                st.error(f" UNSAFE (score: {score:.2f})")
+                st.error(f"UNSAFE (score: {score:.2f})")
             else:
-                st.warning(f" SUSPICIOUS (score: {score:.2f}) — may use indirect framing")
+                st.warning(f"SUSPICIOUS (score: {score:.2f}) — may use indirect framing")
             st.progress(float(score))
-             words = explain(prompt, model, vectorizer)
+            words = explain(prompt, model, vectorizer)
             if words:
                 st.markdown("**Why:**")
                 for word, impact in words:
                     st.markdown(f"- `{word}` → {impact}")
         except Exception as e:
-            st.error(f" Classification failed: {e}")
+            st.error(f"Classification failed: {e}")
 
 with st.sidebar:
     st.header("About")
     st.write("""
     This tool classifies prompts into:
-    -  Safe
-    -  Suspicious
-    -  Unsafe
+    - Safe
+    - Suspicious
+    - Unsafe
     """)
     st.divider()
     st.write("**v2 improvements:**")
