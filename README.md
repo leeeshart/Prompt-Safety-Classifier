@@ -445,8 +445,7 @@ just pattern-match against training examples.
 
 ## Author
 
-**Leesha Mogha**  
-BCA 2nd Year — IMS Ghaziabad (University Course Campus)  
+**Leesha Mogha**    
 ✉️ leeshamogha7@gmail.com
 
 ---
